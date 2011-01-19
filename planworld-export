@@ -57,7 +57,7 @@ $mech->submit_form(
 $mech->submit_form( form_number => 1 );
 
 die "It doesn't look like we successfully logged in. Debug time!\n"
-    unless $mech->uri =~ m{^https?://neon.note.amherst.edu/planworld/}
+    unless $mech->uri =~ m{^https?://neon\.note\.amherst\.edu/planworld/}
        and $mech->content =~ /Log out of planworld/;
 
 # Plans themselves
