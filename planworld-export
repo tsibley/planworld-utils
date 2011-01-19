@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+
+use WWW::Mechanize;
+
+my ($user, $pass) = @ARGV;
+
+die "usage: $0 user pass\n"
+    unless defined $user and defined $pass;
+
+my $mech = WWW::Mechanize->new;
+$mech->get( 'http://neon.note.amherst.edu/planworld/' );
+
+# Submit the form to get to webauth.amherst.edu
+$mech->submit_form( form_number => 1 );
+
+# Submit the login form at webauth
+$mech->submit_form(
+    form_number => 1,
+    fields      => {
+        user => $user,
+        pass => $pass,
+    },
+);
+
+# Submit the form to get back to planworld
+$mech->submit_form( form_number => 1 );
+
+die "It doesn't look like we successfully logged in. Debug time!\n"
+    unless $mech->uri =~ m{^https?://neon.note.amherst.edu/planworld/}
+       and $mech->content =~ /Log out of planworld/;
+
+# Plans themselves
+$mech->get( 'http://neon.note.amherst.edu/planworld/export.php?t=text' );
+
+print $mech->content, "\n";
+print "#####\n";
+
+# Planwatch list
+$mech->get( 'http://neon.note.amherst.edu/planworld/pw_export.php' );
+
+print $mech->content, "\n";
+print "#####\n";
+
+# Send history for at least those on the planwatch list
+for my $user ( split /\n/, $mech->content ) {
+    $mech->get( "http://neon.note.amherst.edu/planworld/send.php/$user" );
+    my ($html) = $mech->content =~ m{<blockquote>(send with $user \(.*?\)</blockquote>\s+</div>.*?)<a name="form">}s;
+    next if not defined $html or not length $html;
+    $html =~ s{</?[^>]+?>}{}g;
+    $html =~ s{<hr />}{}g;
+    print $html, "#####\n";
+}
+

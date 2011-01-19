@@ -1,0 +1,12 @@
+#!/bin/bash
+# This is an example of the backup script I run from cron every night.  I'm not
+# responsible if it eats your cat or you don't test your backups.
+
+BACKUP=/net/backup/tom/planworld
+
+# Here be some shenanigans.
+# fd 3 to the file, stderr to stdout, move stdout sans stderr to fd 3, leaving stderr piped through grep
+/home/tom/bin/planworld-export 3>$BACKUP/$(date +%F,%R).txt 2>&1 1>&3- | grep -v "Wide character in print"
+
+# Optionally remove all backups over 7 days old
+#find $BACKUP -daystart -mtime +7 -iname '*.txt' -exec rm -f \{\} \;
