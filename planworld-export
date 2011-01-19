@@ -2,6 +2,35 @@
 use warnings;
 use strict;
 
+=head1 NAME
+
+planworld-export
+
+=head1 DESCRIPTION
+
+Export your plan archives, planwatch list, and (limited) send history
+
+=head1 SYNOPSIS
+
+    planworld-export username password > pw-backup.txt
+
+=head1 CAVEATS
+
+There is no way to discover your send history.  As such, only your send history
+with those on your current planwatch is exported.  (It iterates over each
+person looking for send logs.)
+
+Since sends are marked read by viewing them, each time this script is run it
+will mark your send history with your planwatch list as read.  The result of
+which is that you might miss new sends if you run this script while you still
+have an unseen send.
+
+=head1 AUTHOR
+
+Thomas Sibley, tsibley.net
+
+=cut
+
 use WWW::Mechanize;
 
 my ($user, $pass) = @ARGV;
