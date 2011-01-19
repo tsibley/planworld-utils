@@ -1,0 +1,4 @@
+These are the scripts I write for dealing with planworld.
+
+Each script should come with its own documentation which you can read in the
+source or in a prettier format by running: perldoc planworld-export.
